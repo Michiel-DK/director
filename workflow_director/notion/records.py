@@ -1,7 +1,7 @@
 from params import *
 from notion_client import Client as NotionClient
 import os
-from at_records import get_recently_updated_records, connect_table
+from workflow_director.airtable.records import get_recently_updated_records, connect_table
 
 
 notion = NotionClient(auth=NOTION_API_KEY)
@@ -28,9 +28,18 @@ def create_or_update_notion_page(record):
     )
     print(f"✅ Synced record '{name}' to Notion.")
     
+    return True
+    
+def update_notion_table(records):
+    
+    for record in records:
+        create_or_update_notion_page(record)
+        
+    return True
+    
+    
 if __name__=='__main__':
     table = connect_table(AIRTABLE_API_KEY, AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME)
     records = get_recently_updated_records(table)
     
-    for record in records:
-        create_or_update_notion_page(record)
+    update_notion_table(records)
